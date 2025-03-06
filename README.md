@@ -2,6 +2,8 @@
 
 Pick the Tumbleweed is a fun and challenging game where you must catch as many tumbleweeds as possible before time runs out! The more you catch, the faster they roll in. Can you beat your high score and keep the game alive?
 
+- **[PLAY HERE](https://tumbleweed-game.web.app)**
+
 
 ### How to Play
 
