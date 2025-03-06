@@ -6,6 +6,8 @@ import removeSound from "/tumbleweed-sound.wav";
 import gameoverSound from "/fail.mp3";
 import backgroundMusic from "/western-sound2.mp3";
 import highscoreSound from "/highscore.mp3";
+import mute from "/volume.svg";
+import volume from "/muted.svg";
 
 interface TumbleweedType {
   id: number;
@@ -21,9 +23,9 @@ interface GameProps {
 const backgroundMusicEffect = new Audio(backgroundMusic);
 backgroundMusicEffect.loop = true;
 
+const gameoverSoundEffect = new Audio(gameoverSound);
+
 const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
-
-
   const [tumbleweeds, setTumbleweeds] = useState<TumbleweedType[]>([]);
   const [score, setScore] = useState(0);
   const [missedTumbleweeds, setMissedTumbleweeds] = useState(0);
@@ -32,15 +34,33 @@ const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
   );
   const [newHighScore, setNewHighScore] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
-   useEffect(() => {
-     if (!gameOver) {
-       backgroundMusicEffect.play(); 
-     } else {
-       backgroundMusicEffect.pause(); 
-       backgroundMusicEffect.currentTime = 0; 
-     }
-   }, [gameOver]);
+  useEffect(() => {
+    if (!gameOver && !isMuted) {
+      backgroundMusicEffect.play();
+    } else {
+      backgroundMusicEffect.pause();
+      backgroundMusicEffect.currentTime = 0;
+    }
+  }, [gameOver, isMuted]);
+
+  useEffect(() => {
+    return () => {
+      backgroundMusicEffect.pause();
+      backgroundMusicEffect.currentTime = 0;
+    };
+  }, []);
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const playGameOverSound = () => {
+    if (!isMuted) {
+      gameoverSoundEffect.play();
+    }
+  };
 
   const MAX_MISSED = 5;
 
@@ -88,52 +108,64 @@ const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
     }, newTumbleweed.duration * 1000);
   };
 
-
   const removeTumbleweed = (id: number) => {
     if (gameOver) return;
 
     setTumbleweeds((prev) => prev.filter((t) => t.id !== id));
     setScore((prevScore) => prevScore + 1);
 
-    const removeSoundEffect = new Audio(removeSound);
-    removeSoundEffect.play();
+    if (!isMuted) {
+      const removeSoundEffect = new Audio(removeSound);
+      removeSoundEffect.play();
+    }
   };
 
-   useEffect(() => {
-     if (gameOver && score > highScore) {
-       setNewHighScore(true);
-       setHighScore(score);
-       localStorage.setItem("highScore", String(score));
-       const highscoreSoundEffect = new Audio(highscoreSound); 
-       highscoreSoundEffect.play();
-     }
+  useEffect(() => {
+    if (gameOver && score > highScore) {
+      setNewHighScore(true);
+      setHighScore(score);
+      localStorage.setItem("highScore", String(score));
 
-     if (gameOver) {
-       const gameoverSoundEffect = new Audio(gameoverSound);
-       gameoverSoundEffect.play();
-     }
-   }, [gameOver, score, highScore]);
+      if (!isMuted) {
+        const highscoreSoundEffect = new Audio(highscoreSound);
+        highscoreSoundEffect.play();
+      }
+    }
 
-   useEffect(() => {
-     const interval = setInterval(() => {
-       addTumbleweed();
-     }, getSpawnRate());
+    if (gameOver) {
+      playGameOverSound();
+    }
+  }, [gameOver, score, highScore, isMuted]);
 
-     return () => clearInterval(interval);
-   }, [score, gameOver]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      addTumbleweed();
+    }, getSpawnRate());
 
-   useEffect(() => {
-     if (missedTumbleweeds >= MAX_MISSED) {
-       setGameOver(true);
-     }
-   }, [missedTumbleweeds]);
+    return () => clearInterval(interval);
+  }, [score, gameOver]);
 
+  useEffect(() => {
+    if (missedTumbleweeds >= MAX_MISSED) {
+      setGameOver(true);
+    }
+  }, [missedTumbleweeds]);
 
   return (
     <div className="game-container">
       <Cursor />
 
       <div className="game-header">
+        <img
+          onClick={toggleMute}
+          src={isMuted ? volume : mute}
+          alt="Mute/Unmute Icon"
+          style={{
+            width: "25px",
+            marginRight: "2px",
+            
+          }}
+        />
         <h1>Pick the Tumbleweed</h1>
         <h2>Score: {score}</h2>
         <h2 className="high-score-text">🏆 High Score: {highScore} 🏆</h2>
