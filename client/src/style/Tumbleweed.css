@@ -1,0 +1,43 @@
+.tumbleweed {
+  width: 90px;
+  height:90px;
+  background-image: url("/tumbleweed4.svg");
+  background-size: cover;
+  position: absolute;
+  
+  cursor: pointer;
+  left: -60px;
+   will-change: transform;
+   z-index: 1000;
+   pointer-events: all;
+  padding: 10px; 
+  border: 2px solid transparent; 
+
+  animation: roll 3s linear infinite, move-across 5s linear forwards;
+}
+
+@keyframes roll {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes move-across {
+  from {
+    left: -60px; 
+  }
+  to {
+    left: calc(100vw + 60px);
+  }
+}
+
+@media (max-width: 900px) {
+  .tumbleweed {
+    width: 60px;
+  height:60px;
+  }
+}
+

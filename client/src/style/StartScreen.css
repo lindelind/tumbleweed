@@ -1,0 +1,89 @@
+
+.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  gap: 20px;
+  background-image: url("https://t3.ftcdn.net/jpg/07/50/51/80/240_F_750518084_MgAVoBgpwDbkkiTWGxTeyTlZiCxOi2Tt.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  font-family: "Rye";
+}
+
+
+.start-screen h1 {
+  font-size: 50px;
+  color: #c56b34; 
+  text-shadow: 4px 4px 0px black, 6px 6px 10px rgba(255, 165, 0, 0.7);
+  animation: neon-glow 1.5s infinite alternate;
+}
+
+
+.start-screen input {
+  padding: 12px;
+  font-size: 20px;
+  border: 3px solid #8b4513; 
+  font-family: "Rye";
+  border-radius: 8px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #5d2f1e;
+  box-shadow: 3px 3px 0px black, 6px 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+
+.start-screen button {
+  padding: 15px 30px;
+  font-size: 22px;
+  font-family: "Rye";
+  background: linear-gradient(45deg, #ff9800, #f44336);
+  color: white;
+  border: 3px solid black;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: 0.3s;
+  box-shadow: 4px 4px 0px black, 8px 8px 15px rgba(0, 0, 0, 0.5);
+}
+
+
+.start-screen button:disabled {
+  background: rgb(173, 90, 90);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+
+.start-screen button:hover:not(:disabled) {
+  background: linear-gradient(45deg, #f44336, #ff9800);
+  transform: scale(1.1);
+}
+
+@keyframes neon-glow {
+  from {
+    text-shadow: 3px 3px 0px black, 6px 6px 10px rgba(255, 165, 0, 0.7);
+  }
+  to {
+    text-shadow: 3px 3px 0px black, 6px 6px 15px rgba(255, 165, 0, 1);
+  }
+}
+
+
+@media (max-width: 900px) {
+  .start-screen h1 {
+    font-size: 40px;
+  }
+
+  .start-screen input {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  .start-screen button {
+    font-size: 18px;
+    padding: 12px 24px;
+  }
+}
