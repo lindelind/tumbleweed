@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../style/NetCursor.css";
+import "../style/Cursor.css";
 
 const Cursor: React.FC = () => {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });

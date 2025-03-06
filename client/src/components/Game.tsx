@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import Tumbleweed from "./Tumbleweed";
 import "../style/Game.css";
 import Cursor from "./Cursor";
+import removeSound from "/tumbleweed-sound.wav";
+import gameoverSound from "/fail.mp3";
+import backgroundMusic from "/western-sound2.mp3";
+import highscoreSound from "/highscore.mp3";
 
 interface TumbleweedType {
   id: number;
@@ -14,7 +18,12 @@ interface GameProps {
   onRestartGame: () => void;
 }
 
+const backgroundMusicEffect = new Audio(backgroundMusic);
+backgroundMusicEffect.loop = true;
+
 const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
+
+
   const [tumbleweeds, setTumbleweeds] = useState<TumbleweedType[]>([]);
   const [score, setScore] = useState(0);
   const [missedTumbleweeds, setMissedTumbleweeds] = useState(0);
@@ -23,6 +32,15 @@ const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
   );
   const [newHighScore, setNewHighScore] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+
+   useEffect(() => {
+     if (!gameOver) {
+       backgroundMusicEffect.play(); 
+     } else {
+       backgroundMusicEffect.pause(); 
+       backgroundMusicEffect.currentTime = 0; 
+     }
+   }, [gameOver]);
 
   const MAX_MISSED = 5;
 
@@ -60,7 +78,6 @@ const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
 
     setTumbleweeds((prev) => [...prev, newTumbleweed]);
 
-
     setTimeout(() => {
       setTumbleweeds((prev) => {
         if (prev.find((t) => t.id === newTumbleweed.id)) {
@@ -68,38 +85,49 @@ const Game: React.FC<GameProps> = ({ playerName, onRestartGame }) => {
         }
         return prev.filter((t) => t.id !== newTumbleweed.id);
       });
-    }, newTumbleweed.duration * 1000); 
+    }, newTumbleweed.duration * 1000);
   };
+
 
   const removeTumbleweed = (id: number) => {
     if (gameOver) return;
 
     setTumbleweeds((prev) => prev.filter((t) => t.id !== id));
     setScore((prevScore) => prevScore + 1);
+
+    const removeSoundEffect = new Audio(removeSound);
+    removeSoundEffect.play();
   };
 
-  useEffect(() => {
-    if (gameOver && score > highScore) {
-      setNewHighScore(true);
-      setHighScore(score);
-      localStorage.setItem("highScore", String(score));
-    }
-  }, [gameOver, score, highScore]);
+   useEffect(() => {
+     if (gameOver && score > highScore) {
+       setNewHighScore(true);
+       setHighScore(score);
+       localStorage.setItem("highScore", String(score));
+       const highscoreSoundEffect = new Audio(highscoreSound); 
+       highscoreSoundEffect.play();
+     }
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      addTumbleweed();
-    }, getSpawnRate());
+     if (gameOver) {
+       const gameoverSoundEffect = new Audio(gameoverSound);
+       gameoverSoundEffect.play();
+     }
+   }, [gameOver, score, highScore]);
 
-    return () => clearInterval(interval);
-  }, [score, gameOver]);
+   useEffect(() => {
+     const interval = setInterval(() => {
+       addTumbleweed();
+     }, getSpawnRate());
 
+     return () => clearInterval(interval);
+   }, [score, gameOver]);
 
-  useEffect(() => {
-    if (missedTumbleweeds >= MAX_MISSED) {
-      setGameOver(true);
-    }
-  }, [missedTumbleweeds]);
+   useEffect(() => {
+     if (missedTumbleweeds >= MAX_MISSED) {
+       setGameOver(true);
+     }
+   }, [missedTumbleweeds]);
+
 
   return (
     <div className="game-container">
